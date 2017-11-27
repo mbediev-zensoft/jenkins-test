@@ -3,7 +3,8 @@ pipeline {
 	stages {
 		stage('Show env variables') {
 			when{
-				"${env.CHANGE_TARGET}" = 'master'
+            expression {
+               env.CHANGE_TARGET} == 'master'
 			}
 			steps {
 				sh 'env'
