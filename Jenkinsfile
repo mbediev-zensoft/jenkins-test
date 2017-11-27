@@ -2,6 +2,9 @@ pipeline {
 	agent any
 	stages {
 		stage('Show env variables') {
+			when{
+				${env.CHANGE_TARGET} = 'master'
+			}
 			steps {
 				sh 'env'
 			}
@@ -9,6 +12,7 @@ pipeline {
 		stage('Get linux verison on remote server'){
 			when{
 				branch 'master'
+				${env.CHANGE_TARGET} = 'master'
 			}
 			steps {
 				sshagent(['5189bf45-1660-4fb6-b025-cbd0a1fdb300']) {
