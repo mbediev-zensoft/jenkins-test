@@ -10,6 +10,7 @@ pipeline {
 								token: env.SLACK_TOKEN,
 								teamDomain: 'p1gmale0n'
 				}
+				sh 'exit 1'
 			}
 		}
 		stage('Run command on remote server'){
