@@ -5,7 +5,7 @@ pipeline {
 			steps {
 				withCredentials([[$class: 'StringBinding', credentialsId: 'slack-token', variable: 'SLACK_TOKEN']]) {
 					slackSend channel: '#random',
-								color: 'blue',
+								color: '#439FE0',
 								message: "Job '${env.JOB_NAME}' *STARTED* \n <${env.RUN_DISPLAY_URL}|*Build Log [${env.BUILD_NUMBER}]*>",
 								token: env.SLACK_TOKEN,
 								teamDomain: 'p1gmale0n'
