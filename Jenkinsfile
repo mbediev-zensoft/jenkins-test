@@ -5,12 +5,14 @@ pipeline {
 			steps {
 				wrappers {
 					credentialsBinding {
-					string('slackToken', 'slack-token')
+						string('slackToken', 'slack-token')
 					}
 				}
 				// send build started notifications
-				slackSend (color: '#FFFF00', message: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})",
-					baseUrl: "${slackToken}", teamDomain: 'p1gmale0n')
+				withCredentials([file(credentialsId: 'slack-token', variable: 'slackToken')]) {
+					slackSend (color: '#FFFF00', message: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})",
+						baseUrl: "${slackToken}", teamDomain: 'p1gmale0n')	
+				}
 				sh 'env'
 			}
 		}
