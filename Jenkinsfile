@@ -6,7 +6,7 @@ pipeline {
 				withCredentials([[$class: 'StringBinding', credentialsId: 'slack-token', variable: 'SLACK_TOKEN']]) {
 					slackSend channel: '#random',
 								color: '#439FE0',
-								message: "Job '${env.JOB_NAME}' *STARTED* \n <${env.RUN_DISPLAY_URL}|*Build Log [${env.BUILD_NUMBER}]*>",
+								message: "*STARTED*: Job '${env.JOB_NAME}' \n <${env.RUN_DISPLAY_URL}|*Build Log [${env.BUILD_NUMBER}]*>",
 								token: env.SLACK_TOKEN,
 								teamDomain: 'p1gmale0n'
 				}
@@ -29,7 +29,7 @@ pipeline {
 			withCredentials([[$class: 'StringBinding', credentialsId: 'slack-token', variable: 'SLACK_TOKEN']]) {
 				slackSend channel: '#random',
 							color: 'good',
-							message: "Job '${env.JOB_NAME}' build *SUCCESSFUL*. \n <${env.RUN_DISPLAY_URL}|*Build Log [${env.BUILD_NUMBER}]*>",
+							message: "*SUCCESSFUL*: Job '${env.JOB_NAME}'. \n <${env.RUN_DISPLAY_URL}|*Build Log [${env.BUILD_NUMBER}]*>",
 							token: env.SLACK_TOKEN,
 							teamDomain: 'p1gmale0n'
 			}
@@ -39,7 +39,7 @@ pipeline {
 			withCredentials([[$class: 'StringBinding', credentialsId: 'slack-token', variable: 'SLACK_TOKEN']]) {
 				slackSend channel: '#random',
 							color: 'danger',
-							message: "@here ALARM! Job '${env.JOB_NAME}' build *FAILED* \n <${env.RUN_DISPLAY_URL}|*Build Log [${env.BUILD_NUMBER}]*>",
+							message: "@here ALARM! \n *FAILED*: Job '${env.JOB_NAME}' \n <${env.RUN_DISPLAY_URL}|*Build Log [${env.BUILD_NUMBER}]*>",
 							token: env.SLACK_TOKEN,
 							teamDomain: 'p1gmale0n'
 			}
