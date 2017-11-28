@@ -3,15 +3,10 @@ pipeline {
 	stages {
 		stage('Simple stage') {
 			steps {
-				// send build started notifications
-				// withCredentials([string(credentialsId: 'slack-token', variable: 'slackToken')]) {
-				// 	slackSend (color: '#FFFF00', message: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})", token: "${slackToken}", teamDomain: 'p1gmale0n')
-				// }
-				sh 'env'
 				withCredentials([[$class: 'StringBinding', credentialsId: 'slack-token', variable: 'SLACK_TOKEN']]) {
 					slackSend channel: '#random',
 								color: 'good',
-								message: "A new PR to be approved for aliBuild. Please check https://alijenkins.cern.ch/job/alibuild-pipeline/branch/${env.BRANCH_NAME}",
+								message: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})",
 								token: env.SLACK_TOKEN,
 								teamDomain: 'p1gmale0n'
 				}
@@ -29,13 +24,23 @@ pipeline {
 		}
 	}
 
-	// post {
-	// 	success {
-	// 	slackSend (color: '#00FF00', message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
-	// 	}
+	post {
+		success {
+		withCredentials([[$class: 'StringBinding', credentialsId: 'slack-token', variable: 'SLACK_TOKEN']]) {
+			slackSend channel: '#random',
+						color: 'good',
+						message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})",
+						token: env.SLACK_TOKEN,
+						teamDomain: 'p1gmale0n'
+		}
 
-	// 	failure {
-	// 	slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
-	// 	}
-	// }
+		failure {
+		withCredentials([[$class: 'StringBinding', credentialsId: 'slack-token', variable: 'SLACK_TOKEN']]) {
+			slackSend channel: '#random',
+						color: 'bad',
+						message: "@here FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})",
+						token: env.SLACK_TOKEN,
+						teamDomain: 'p1gmale0n'
+		}
+	}
 }
