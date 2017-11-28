@@ -38,7 +38,7 @@ pipeline {
 
 		failure {
 			withCredentials([[$class: 'StringBinding', credentialsId: 'slack-token', variable: 'SLACK_TOKEN']]) {
-				slackSend channel: '#random',
+				slackSend channel: '#general',
 							color: 'danger',
 							message: "@here ALARM! \n *FAILED*: Job '${env.JOB_NAME}' \n <${env.RUN_DISPLAY_URL}|*Build Log [${env.BUILD_NUMBER}]*>",
 							token: env.SLACK_TOKEN,
