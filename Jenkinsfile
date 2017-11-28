@@ -13,6 +13,7 @@ pipeline {
 								color: 'good',
 								message: "A new PR to be approved for aliBuild. Please check https://alijenkins.cern.ch/job/alibuild-pipeline/branch/${env.BRANCH_NAME}",
 								token: env.SLACK_TOKEN
+								teamDomain: p1gmale0n
 				}
 			}
 		}
