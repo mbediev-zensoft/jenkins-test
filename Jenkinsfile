@@ -6,7 +6,7 @@ pipeline {
 				withCredentials([[$class: 'StringBinding', credentialsId: 'slack-token', variable: 'SLACK_TOKEN']]) {
 					slackSend channel: '#random',
 								color: 'good',
-								message: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})",
+								message: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.RUN_DISPLAY_URL})",
 								token: env.SLACK_TOKEN,
 								teamDomain: 'p1gmale0n'
 				}
