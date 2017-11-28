@@ -1,17 +1,14 @@
 pipeline {
 	agent any
 	stages {
-		stage('Show env variables') {
-			when{
-				expression {
-				env.CHANGE_TARGET == 'master'
-				}
-			}
+		stage('Simple stage') {
 			steps {
+				// send build started notifications
+				slackSend (color: '#FFFF00', message: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
 				sh 'env'
 			}
 		}
-		stage('Get linux verison on remote server'){
+		stage('Run command on remote server'){
 			when{
 				branch 'master'
 			}
@@ -20,6 +17,16 @@ pipeline {
 					sh 'ssh -o StrictHostKeyChecking=no -l ubuntu staging.goin.org uname -a'
 				}
 			}
+		}
+	}
+
+	post {
+		success {
+		slackSend (color: '#00FF00', message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+		}
+
+		failure {
+		slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
 		}
 	}
 }
