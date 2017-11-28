@@ -3,11 +3,6 @@ pipeline {
 	stages {
 		stage('Simple stage') {
 			steps {
-				wrappers {
-					credentialsBinding {
-						string('slackToken', 'slack-token')
-					}
-				}
 				// send build started notifications
 				withCredentials([string(credentialsId: 'slack-token', variable: 'slackToken')]) {
 					slackSend (color: '#FFFF00', message: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})",
