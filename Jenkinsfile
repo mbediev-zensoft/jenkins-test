@@ -6,7 +6,7 @@ pipeline {
 				// send build started notifications
 				withCredentials([string(credentialsId: 'slack-token', variable: 'slackToken')]) {
 					slackSend (color: '#FFFF00', message: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})",
-						baseUrl: "${slackToken}", teamDomain: 'p1gmale0n')	
+						token: "${slackToken}", teamDomain: 'p1gmale0n')	
 				}
 				sh 'env'
 			}
