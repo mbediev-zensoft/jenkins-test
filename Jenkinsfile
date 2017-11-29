@@ -18,7 +18,7 @@ pipeline {
 					def node = docker.image('node:carbon-stretch')
 					node.pull()
 					node.inside {
-						npm test
+						sh 'npm test'
 					}
 				}
 			}
