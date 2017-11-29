@@ -14,10 +14,12 @@ pipeline {
 		}
 		stage('run unit tests') {		// run unit tests insode docker container
 			steps {
-				def node = docker.image('node:carbon-stretch')
-				node.pull()
-  				node.inside {
-					npm test
+				script {
+					def node = docker.image('node:carbon-stretch')
+					node.pull()
+					node.inside {
+						npm test
+					}
 				}
 			}
 		}
