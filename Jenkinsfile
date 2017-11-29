@@ -18,6 +18,7 @@ pipeline {
 					def node = docker.image('node:carbon-stretch')
 					node.pull()
 					node.inside {
+						sh 'npm config set cache /tmp'
 						sh 'npm install'
 						sh 'npm run test'
 					}
