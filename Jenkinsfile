@@ -33,8 +33,8 @@ pipeline {
 		}
 		stage('upload') {
 			steps {
-				docker.withRegistry('https://174962129288.dkr.ecr.eu-west-1.amazonaws.com/', 'arn:aws:iam::174962129288:user/jenkins') {
- 					docker.image('jenkins-test').push("latest")
+				docker.withRegistry('https://174962129288.dkr.ecr.eu-west-1.amazonaws.com/', 'ecr:eu-west-1:aws-user-jenkins') {
+ 					docker.image('jenkins-test').push("${env.BRANCH_NAME}-${env.BUILD_ID}")
 				}
 			}
 		}
