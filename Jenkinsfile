@@ -27,7 +27,7 @@ pipeline {
 		stage('build') {
 			steps {
 				script {
-					def nodeDockerImage = docker.build("jenkins-test")
+					def nodeDockerImage = docker.build("jenkins-test:${env.BRANCH_NAME}-${env.BUILD_ID}")
 				}
 			}
 		}
