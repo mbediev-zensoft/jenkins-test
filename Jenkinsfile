@@ -27,7 +27,7 @@ pipeline {
 		stage('build') {
 			steps {
 				script {
-					def nodeDockerImage = docker.build("jenkins-testl ")
+					def nodeDockerImage = docker.build("jenkins-test")
 				}
 			}
 		}
