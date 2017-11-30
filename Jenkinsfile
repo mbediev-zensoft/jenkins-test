@@ -12,7 +12,7 @@ pipeline {
 				}
 			}
 		}
-		stage('run unit tests') {		// run unit tests insode docker container
+		stage('run unit tests') {		// run unit tests inside docker container
 			steps {
 				script {
 					def node = docker.image('node:carbon-stretch')
@@ -24,7 +24,12 @@ pipeline {
 				}
 			}
 		}
-		// stage('build')				// build docker container
+		stage('build') {					// build docker container
+			steps {
+				script {
+					def nodeDockerImage = docker.build("jenkins-test:${env.BRANCH_NAME}-${env.BUILD_ID}")
+				}
+			}
 		// stage('upload artifacts')	// tag doker container, auth on remote registry, upload docker container
 		// stage('deploy')				// deploy container from registry to server
 
@@ -38,6 +43,7 @@ pipeline {
 		// 		}
 		// 	}
 		// }
+		}
 	}
 
 	post {
