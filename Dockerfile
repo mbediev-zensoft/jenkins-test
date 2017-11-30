@@ -1,4 +1,4 @@
-FROM node:carbon-stretch
+FROM node:carbon-alpine
 
 WORKDIR /home/app
 
