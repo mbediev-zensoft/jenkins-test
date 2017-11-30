@@ -12,7 +12,7 @@ pipeline {
 				}
 			}
 		}
-		stage('run unit tests') {		// run unit tests inside docker container
+		stage('tests') {
 			steps {
 				script {
 					def node = docker.image('node:carbon-stretch')
@@ -24,12 +24,19 @@ pipeline {
 				}
 			}
 		}
-		stage('build') {					// build docker container
+		stage('build') {
 			steps {
 				script {
 					def nodeDockerImage = docker.build("jenkins-test:${env.BRANCH_NAME}-${env.BUILD_ID}")
 				}
 			}
+		}
+		stage('upload') {
+			steps {
+				docker.withRegistry('https://174962129288.dkr.ecr.eu-west-1.amazonaws.com/', 'arn:aws:iam::174962129288:user/jenkins') {
+ 				docker.image('jenkins-test').push("${env.BRANCH_NAME}-${env.BUILD_ID}")
+			}
+		}
 		// stage('upload artifacts')	// tag doker container, auth on remote registry, upload docker container
 		// stage('deploy')				// deploy container from registry to server
 
@@ -43,7 +50,6 @@ pipeline {
 		// 		}
 		// 	}
 		// }
-		}
 	}
 
 	post {
