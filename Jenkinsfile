@@ -27,7 +27,7 @@ pipeline {
 		stage('build') {
 			steps {
 				script {
-					def nodeDockerImage = docker.build("jenkins-test:${env.BRANCH_NAME}-${env.BUILD_ID}")
+					def nodeDockerImage = docker.build("jenkins-testl ")
 				}
 			}
 		}
@@ -35,7 +35,7 @@ pipeline {
 			steps {
 				script {
 					docker.withRegistry('https://174962129288.dkr.ecr.eu-west-1.amazonaws.com/', 'ecr:eu-west-1:aws-user-jenkins') {
-						docker.image('jenkins-test').push("${env.BRANCH_NAME}-${env.BUILD_ID}")
+						docker.image("jenkins-test:${env.BRANCH_NAME}-${env.BUILD_ID}").push("${env.BRANCH_NAME}-${env.BUILD_ID}")
 					}
 				}
 			}
