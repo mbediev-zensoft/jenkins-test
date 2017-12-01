@@ -62,7 +62,7 @@ pipeline {
 						sh "sed -i='' 's/<image_name>/${env.PROJECT_NAME}/' ${env.WORKSPACE}/Dockerrun.aws.json"
 						sh "sed -i='' 's/<tag_name>/${env.BRANCH_NAME}-v${env.BUILD_ID}/' ${env.WORKSPACE}/Dockerrun.aws.json"
 						sh "sed -i='' 's/<memory_placeholder>/250/' ${env.WORKSPACE}/Dockerrun.aws.json"
-						sh "/usr/bin/zip -r ${env.WORKSPACE}/Dockerrun.aws.${env.BRANCH_NAME}-v${env.BUILD_ID}.zip ${env.WORKSPACE}/Dockerrun.aws.json"
+						sh "/usr/bin/zip -j -r ${env.WORKSPACE}/Dockerrun.aws.${env.BRANCH_NAME}-v${env.BUILD_ID}.zip ${env.WORKSPACE}/Dockerrun.aws.json"
 						sh "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=${AWS_REGION} \
 						${AWS_BIN} s3 cp \
 						${env.WORKSPACE}/Dockerrun.aws.${env.BRANCH_NAME}-v${env.BUILD_ID}.zip \
