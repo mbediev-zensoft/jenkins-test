@@ -3,7 +3,7 @@
     "containerDefinitions": [
     {
         "name": "app",
-        "image": "<image_name>:<tag_name>",
+        "image": "174962129288.dkr.ecr.eu-west-1.amazonaws.com/<image_name>:<tag_name>",
         "memory": <memory_placeholder>,
         "portMappings": [
         {

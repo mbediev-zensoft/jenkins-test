@@ -59,7 +59,7 @@ pipeline {
 						accessKeyVariable: 'AWS_ACCESS_KEY_ID',
 						secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
 					]]) {
-						sh "sed -i='' 's/<image_name>/174962129288.dkr.ecr.eu-west-1.amazonaws.com\/${env.PROJECT_NAME}/' ${env.WORKSPACE}/Dockerrun.aws.json"
+						sh "sed -i='' 's/<image_name>/${env.PROJECT_NAME}/' ${env.WORKSPACE}/Dockerrun.aws.json"
 						sh "sed -i='' 's/<tag_name>/${env.BRANCH_NAME}-v${env.BUILD_ID}/' ${env.WORKSPACE}/Dockerrun.aws.json"
 						sh "sed -i='' 's/<memory_placeholder>/250/' ${env.WORKSPACE}/Dockerrun.aws.json"
 						sh "/usr/bin/zip -j -r ${env.WORKSPACE}/Dockerrun.aws.${env.BRANCH_NAME}-v${env.BUILD_ID}.zip ${env.WORKSPACE}/Dockerrun.aws.json"
