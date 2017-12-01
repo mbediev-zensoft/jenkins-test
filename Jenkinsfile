@@ -79,7 +79,7 @@ pipeline {
 						accessKeyVariable: 'AWS_ACCESS_KEY_ID',
 						secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
 					]]) {
-						"sh AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=${AWS_REGION} \
+						sh "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=${AWS_REGION} \
 						${AWS_BIN} elasticbeanstalk create-application-version \
 						--application-name 'Jenkins-test' \
 						--version-label '${env.BRANCH_NAME}-v${env.BUILD_ID}' \
