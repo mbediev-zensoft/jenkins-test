@@ -3,7 +3,7 @@
     "containerDefinitions": [
     {
         "name": "app",
-        "image": "<image_placeholder>",
+        "image": "<image_name>:<tag_name>",
         "memory": <memory_placeholder>,
         "portMappings": [
         {
