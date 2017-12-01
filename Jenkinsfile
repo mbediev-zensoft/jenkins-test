@@ -42,7 +42,7 @@ pipeline {
 		stage('upload') {
 			steps {
 				script {
-					docker.withRegistry("${env.ECR_REPO_URL}", "${env.ECR_CRED_ID}") {
+					docker.withRegistry("${env.ECR_REPO_URL}", 'ecr:eu-west-1:aws-user-jenkins') {
 						docker.image("${env.PROJECT_NAME}:${env.BRANCH_NAME}-${env.BUILD_ID}").push("${env.BRANCH_NAME}-${env.BUILD_ID}")
 					}
 				}
