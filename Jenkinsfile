@@ -35,15 +35,15 @@ pipeline {
 		stage('build') {
 			steps {
 				script {
-					def nodeDockerImage = docker.build("${PROJECT_NAME}:${env.BRANCH_NAME}-${env.BUILD_ID}")
+					def nodeDockerImage = docker.build("${env.PROJECT_NAME}:${env.BRANCH_NAME}-${env.BUILD_ID}")
 				}
 			}
 		}
 		stage('upload') {
 			steps {
 				script {
-					docker.withRegistry("${ECR_REPO_URL}", "${ECR_CRED_ID}") {
-						docker.image("${PROJECT_NAME}:${env.BRANCH_NAME}-${env.BUILD_ID}").push("${env.BRANCH_NAME}-${env.BUILD_ID}")
+					docker.withRegistry("${env.ECR_REPO_URL}", "${env.ECR_CRED_ID}") {
+						docker.image("${env.PROJECT_NAME}:${env.BRANCH_NAME}-${env.BUILD_ID}").push("${env.BRANCH_NAME}-${env.BUILD_ID}")
 					}
 				}
 			}
@@ -52,7 +52,7 @@ pipeline {
 			steps {
 				script {
 					withAWS(credentials:'aws-user-jenkins') {
-						s3Upload(file:'package.json', bucket:'elasticbranstalk-eu-west-1-174962129288', path:'/package.json')
+						s3Upload(file:'package.json', bucket:'elasticbeanstalk-eu-west-1-174962129288', path:'/package.json')
 					}
 				}
 			}
