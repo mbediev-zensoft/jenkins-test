@@ -1,0 +1,17 @@
+{
+    "AWSEBDockerrunVersion": "2",
+    "containerDefinitions": [
+    {
+        "name": "app",
+        "image": "<image_placeholder>",
+        "memory": <memory_placeholder>,
+        "portMappings": [
+        {
+        "hostPort": 80,
+        "containerPort": 8000
+        }
+        ]
+
+    }
+    ]
+}
