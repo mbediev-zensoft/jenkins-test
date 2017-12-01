@@ -42,7 +42,7 @@ pipeline {
 		stage('upload') {
 			steps {
 				script {
-					docker.withRegistry('https://174962129288.dkr.ecr.eu-west-1.amazonaws.com', 'ecr:eu-west-1:aws-user-jenkins') {
+					docker.withRegistry('https://174962129288.dkr.ecr.eu-west-1.amazonaws.com/', 'ecr:eu-west-1:aws-user-jenkins') {
 						docker.image("${env.PROJECT_NAME}:${env.BRANCH_NAME}-${env.BUILD_ID}").push("${env.BRANCH_NAME}-${env.BUILD_ID}")
 					}
 				}
