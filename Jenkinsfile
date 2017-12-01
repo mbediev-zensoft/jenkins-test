@@ -66,27 +66,34 @@ pipeline {
 						${AWS_BIN} s3 cp \
 						${env.WORKSPACE}/Dockerrun.aws.${env.BRANCH_NAME}-v${env.BUILD_ID}.zip \
 						s3://${S3_BUCKET}/"
-						// sh 'AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=${AWS_REGION} ${AWS_BIN} '
 					}
 				}
 			}
     	}
-		// stage('deploy to beanstalk') {
-		// 	steps {
-		// 		script {
-		// 			withCredentials([[
-		// 				$class: 'AmazonWebServicesCredentialsBinding',
-		// 				credentialsId: 'aws-user-jenkins',
-		// 				accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-		// 				secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-		// 			]]) {
-		// 				sh 'AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=${AWS_REGION} ${AWS_BIN} elasticbeanstalk create-application-version --application-name "Jenkins-test" --version-label "${env.BRANCH_NAME}-v${env.BUILD_ID}" --source-bundle S3Bucket="${S3_BUCKET}",S3Key="${env.PROJECT_NAME}:${env.BRANCH_NAME}-v${env.BUILD_ID}"'
-		// 				sh 'AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=${AWS_REGION} ${AWS_BIN} elasticbeanstalk update-environment --environment-name "jenkins-test" --version-label "${env.BRANCH_NAME}-v${env.BUILD_ID}"'
-		// 				// sh 'AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=${AWS_REGION} ${AWS_BIN} '
-		// 			}
-		// 		}
-		// 	}
-		// }
+		stage('deploy to beanstalk') {
+			steps {
+				script {
+					withCredentials([[
+						$class: 'AmazonWebServicesCredentialsBinding',
+						credentialsId: 'aws-user-jenkins',
+						accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+						secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+					]]) {
+						sh 'AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=${AWS_REGION} \
+						${AWS_BIN} elasticbeanstalk create-application-version \
+						--application-name "Jenkins-test" \
+						--version-label "${env.BRANCH_NAME}-v${env.BUILD_ID}" \
+						--source-bundle S3Bucket="${S3_BUCKET}",S3Key="${env.PROJECT_NAME}:${env.BRANCH_NAME}-v${env.BUILD_ID}"'
+
+						sh 'AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=${AWS_REGION} \
+						${AWS_BIN} elasticbeanstalk update-environment \
+						--environment-name "jenkins-test" \
+						--version-label "${env.BRANCH_NAME}-v${env.BUILD_ID}"'
+						// sh 'AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=${AWS_REGION} ${AWS_BIN} '
+					}
+				}
+			}
+		}
 
 		// stage('Run command on remote server'){
 		// 	when{
