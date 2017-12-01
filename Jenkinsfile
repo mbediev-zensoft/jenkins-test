@@ -1,5 +1,13 @@
 pipeline {
 	agent any
+
+    environment {
+        PROJECT_NAME	= 'jenkins-test'											// container name
+		ECR_REPO_URL	= 'https://174962129288.dkr.ecr.eu-west-1.amazonaws.com'	// ecr repository url
+		ECR_CRED_ID		= 'ecr:eu-west-1:aws-user-jenkins'							// ecr:region_id:jenkins_cred_id
+		
+    }
+
 	stages {
 		stage('Send Slack notification') {
 			steps {
@@ -27,20 +35,29 @@ pipeline {
 		stage('build') {
 			steps {
 				script {
-					def nodeDockerImage = docker.build("jenkins-test:${env.BRANCH_NAME}-${env.BUILD_ID}")
+					def nodeDockerImage = docker.build("${PROJECT_NAME}:${env.BRANCH_NAME}-${env.BUILD_ID}")
 				}
 			}
 		}
 		stage('upload') {
 			steps {
 				script {
-					docker.withRegistry('https://174962129288.dkr.ecr.eu-west-1.amazonaws.com/', 'ecr:eu-west-1:aws-user-jenkins') {
-						docker.image("jenkins-test:${env.BRANCH_NAME}-${env.BUILD_ID}").push("${env.BRANCH_NAME}-${env.BUILD_ID}")
+					docker.withRegistry("${ECR_REPO_URL}", "${ECR_CRED_ID}") {
+						docker.image("${PROJECT_NAME}:${env.BRANCH_NAME}-${env.BUILD_ID}").push("${env.BRANCH_NAME}-${env.BUILD_ID}")
 					}
 				}
 			}
 		}
-		// stage('upload artifacts')	// tag doker container, auth on remote registry, upload docker container
+		stage('upload version conf to s3') {
+			steps {
+				script {
+					withAWS(credentials:'aws-user-jenkins') {
+						s3Upload(file:'package.json', bucket:'elasticbranstalk-eu-west-1-174962129288', path:'/package.json')
+					}
+				}
+			}
+		}
+
 		// stage('deploy')				// deploy container from registry to server
 
 		// stage('Run command on remote server'){
