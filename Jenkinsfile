@@ -65,7 +65,7 @@ pipeline {
 					]]) {
 						def awscli = docker.image('mesosphere/aws-cli:latest')
 						awscli.pull()
-						awscli.inside("AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=${AWS_REGION}") {
+						awscli.inside("-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} -e AWS_DEFAULT_REGION=${AWS_REGION}") {
 							"aws s3 cp \
 							${env.WORKSPACE}/Dockerrun.aws.${env.BRANCH_NAME}-v${env.BUILD_ID}.zip \
 							s3://${S3_BUCKET}/"							
@@ -89,7 +89,7 @@ pipeline {
 					]]) {
 						def awscli = docker.image('mesosphere/aws-cli:latest')
 						awscli.pull()
-						awscli.inside("AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=${AWS_REGION}") {
+						awscli.inside("-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} -e AWS_DEFAULT_REGION=${AWS_REGION}") {
 							"aws elasticbeanstalk create-application-version \
 							--application-name	'Jenkins-test' \
 							--version-label		'${env.BRANCH_NAME}-v${env.BUILD_ID}' \
