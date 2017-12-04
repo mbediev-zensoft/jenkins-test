@@ -90,11 +90,11 @@ pipeline {
 						def awscli = docker.image('xueshanf/awscli:latest')
 						awscli.pull()
 						awscli.inside("-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} -e AWS_DEFAULT_REGION=${AWS_REGION}") {
-							sh "aws elasticbeanstalk create-application-version \
+							sh "/usr/bin/aws elasticbeanstalk create-application-version \
 								--application-name	'Jenkins-test' \
 								--version-label		'${env.BRANCH_NAME}-v${env.BUILD_ID}' \
-								--source-bundle 	S3Bucket	= '${S3_BUCKET}', \
-													S3Key		= 'Dockerrun.aws.${env.BRANCH_NAME}-v${env.BUILD_ID}.zip'"
+								--source-bundle 	S3Bucket='${S3_BUCKET}', \
+													S3Key='Dockerrun.aws.${env.BRANCH_NAME}-v${env.BUILD_ID}.zip'"
 						}
 
 						// sh "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=${AWS_REGION} \
