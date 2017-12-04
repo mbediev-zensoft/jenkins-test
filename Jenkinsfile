@@ -66,7 +66,7 @@ pipeline {
 						def awscli = docker.image('mesosphere/aws-cli:latest')
 						awscli.pull()
 						awscli.inside {
-							"s3 cp \
+							"aws s3 cp \
 							${env.WORKSPACE}/Dockerrun.aws.${env.BRANCH_NAME}-v${env.BUILD_ID}.zip \
 							s3://${S3_BUCKET}/"							
 						}
@@ -90,7 +90,7 @@ pipeline {
 						def awscli = docker.image('mesosphere/aws-cli:latest') {
 							awscli.pull()
 							awscli.inside {
-								"elasticbeanstalk create-application-version \
+								"aws elasticbeanstalk create-application-version \
 								--application-name	'Jenkins-test' \
 								--version-label		'${env.BRANCH_NAME}-v${env.BUILD_ID}' \
 								--source-bundle 	S3Bucket	= '${S3_BUCKET}', \
