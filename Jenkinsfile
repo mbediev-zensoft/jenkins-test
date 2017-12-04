@@ -14,11 +14,12 @@ pipeline {
 		stage('Send Slack notification') {
 			steps {
 				withCredentials([[$class: 'StringBinding', credentialsId: 'slack-token', variable: 'SLACK_TOKEN']]) {
-					slackSend channel: '#random',
-						color: '#439FE0',
-						message: "*STARTED*: Job '${env.JOB_NAME}' \n <${env.RUN_DISPLAY_URL}|*Build Log [${env.BUILD_NUMBER}]*>",
-					teamDomain: 'p1gmale0n',
-					token: env.SLACK_TOKEN
+					slackSend
+					teamDomain:	'p1gmale0n',
+					channel:	'#random',
+					token:		env.SLACK_TOKEN
+					color:		'#439FE0', 			// blue
+					message:	"*STARTED*: Job '${env.JOB_NAME}' \n <${env.RUN_DISPLAY_URL}|*Build Log [${env.BUILD_NUMBER}]*>"
 				}
 			}
 		}
@@ -52,6 +53,10 @@ pipeline {
 		}
 		stage('upload version conf to s3') {
 			steps {
+				sh "sed -i='' 's#<image_name>#174962129288.dkr.ecr.eu-west-1.amazonaws.com/${env.PROJECT_NAME}#' ${env.WORKSPACE}/Dockerrun.aws.json"
+				sh "sed -i='' 's/<tag_name>/${env.BRANCH_NAME}-v${env.BUILD_ID}/' ${env.WORKSPACE}/Dockerrun.aws.json"
+				sh "sed -i='' 's/<memory_placeholder>/250/' ${env.WORKSPACE}/Dockerrun.aws.json"
+				sh "/usr/bin/zip -j -r ${env.WORKSPACE}/Dockerrun.aws.${env.BRANCH_NAME}-v${env.BUILD_ID}.zip ${env.WORKSPACE}/Dockerrun.aws.json"
 				script {
 					withCredentials([[
 						$class: 'AmazonWebServicesCredentialsBinding',
@@ -59,14 +64,18 @@ pipeline {
 						accessKeyVariable: 'AWS_ACCESS_KEY_ID',
 						secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
 					]]) {
-						sh "sed -i='' 's#<image_name>#174962129288.dkr.ecr.eu-west-1.amazonaws.com/${env.PROJECT_NAME}#' ${env.WORKSPACE}/Dockerrun.aws.json"
-						sh "sed -i='' 's/<tag_name>/${env.BRANCH_NAME}-v${env.BUILD_ID}/' ${env.WORKSPACE}/Dockerrun.aws.json"
-						sh "sed -i='' 's/<memory_placeholder>/250/' ${env.WORKSPACE}/Dockerrun.aws.json"
-						sh "/usr/bin/zip -j -r ${env.WORKSPACE}/Dockerrun.aws.${env.BRANCH_NAME}-v${env.BUILD_ID}.zip ${env.WORKSPACE}/Dockerrun.aws.json"
-						sh "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=${AWS_REGION} \
-						${AWS_BIN} s3 cp \
-						${env.WORKSPACE}/Dockerrun.aws.${env.BRANCH_NAME}-v${env.BUILD_ID}.zip \
-						s3://${S3_BUCKET}/"
+						def awscli = docker.image('mesosphere/aws-cli:latest') {
+							awscli.pull()
+							awscli.inside {
+								"s3 cp \
+								${env.WORKSPACE}/Dockerrun.aws.${env.BRANCH_NAME}-v${env.BUILD_ID}.zip \
+								s3://${S3_BUCKET}/"							
+							}
+						}
+						// sh "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=${AWS_REGION} \
+						// ${AWS_BIN} s3 cp \
+						// ${env.WORKSPACE}/Dockerrun.aws.${env.BRANCH_NAME}-v${env.BUILD_ID}.zip \
+						// s3://${S3_BUCKET}/"
 					}
 				}
 			}
@@ -80,16 +89,27 @@ pipeline {
 						accessKeyVariable: 'AWS_ACCESS_KEY_ID',
 						secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
 					]]) {
-						sh "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=${AWS_REGION} \
-						${AWS_BIN} elasticbeanstalk create-application-version \
-						--application-name 'Jenkins-test' \
-						--version-label '${env.BRANCH_NAME}-v${env.BUILD_ID}' \
-						--source-bundle S3Bucket='${S3_BUCKET}',S3Key='Dockerrun.aws.${env.BRANCH_NAME}-v${env.BUILD_ID}.zip'"
+						def awscli = docker.image('mesosphere/aws-cli:latest') {
+							awscli.pull()
+							awscli.inside {
+								elasticbeanstalk create-application-version \
+								--application-name	'Jenkins-test' \
+								--version-label		'${env.BRANCH_NAME}-v${env.BUILD_ID}' \
+								--source-bundle 	S3Bucket	= '${S3_BUCKET}',
+													S3Key		= 'Dockerrun.aws.${env.BRANCH_NAME}-v${env.BUILD_ID}.zip'
+							}
+						}
 
-						sh "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=${AWS_REGION} \
-						${AWS_BIN} elasticbeanstalk update-environment \
-						--environment-name 'jenkins-test' \
-						--version-label '${env.BRANCH_NAME}-v${env.BUILD_ID}'"
+						// sh "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=${AWS_REGION} \
+						// ${AWS_BIN} elasticbeanstalk create-application-version \
+						// --application-name 'Jenkins-test' \
+						// --version-label '${env.BRANCH_NAME}-v${env.BUILD_ID}' \
+						// --source-bundle S3Bucket='${S3_BUCKET}',S3Key='Dockerrun.aws.${env.BRANCH_NAME}-v${env.BUILD_ID}.zip'"
+
+						// sh "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=${AWS_REGION} \
+						// ${AWS_BIN} elasticbeanstalk update-environment \
+						// --environment-name 'jenkins-test' \
+						// --version-label '${env.BRANCH_NAME}-v${env.BUILD_ID}'"
 					}
 				}
 			}
@@ -110,21 +130,25 @@ pipeline {
 	post {
 		success {
 			withCredentials([[$class: 'StringBinding', credentialsId: 'slack-token', variable: 'SLACK_TOKEN']]) {
-				slackSend channel: '#random',
-					color: 'good',
-					message: "*SUCCESSFUL*: Job '${env.JOB_NAME}'. \n <${env.RUN_DISPLAY_URL}|*Build Log [${env.BUILD_NUMBER}]*>",
-					teamDomain: 'p1gmale0n',
-					token: env.SLACK_TOKEN
+				withCredentials([[$class: 'StringBinding', credentialsId: 'slack-token', variable: 'SLACK_TOKEN']]) {
+					slackSend
+					teamDomain:	'p1gmale0n',
+					channel:	'#random',
+					token:		env.SLACK_TOKEN
+					color:		'good',
+					message:	"*SUCCESSFUL*: Job '${env.JOB_NAME}'. \n <${env.RUN_DISPLAY_URL}|*Build Log [${env.BUILD_NUMBER}]*>"
 			}
 		}
 
 		failure {
 			withCredentials([[$class: 'StringBinding', credentialsId: 'slack-token', variable: 'SLACK_TOKEN']]) {
-				slackSend channel: '#general',
-					color: 'danger',
-					message: "@here ALARM! \n *FAILED*: Job '${env.JOB_NAME}' \n <${env.RUN_DISPLAY_URL}|*Build Log [${env.BUILD_NUMBER}]*>",
-					teamDomain: 'p1gmale0n',
-					token: env.SLACK_TOKEN
+				withCredentials([[$class: 'StringBinding', credentialsId: 'slack-token', variable: 'SLACK_TOKEN']]) {
+					slackSend
+					teamDomain:	'p1gmale0n',
+					channel:	'#random',
+					token:		env.SLACK_TOKEN
+					color:		'danger',
+					message:	"@here ALARM! \n *FAILED*: Job '${env.JOB_NAME}' \n <${env.RUN_DISPLAY_URL}|*Build Log [${env.BUILD_NUMBER}]*>"
 			}
 		}
 	}
