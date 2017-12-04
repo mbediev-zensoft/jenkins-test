@@ -93,7 +93,7 @@ pipeline {
 							sh "/usr/bin/aws elasticbeanstalk create-application-version \
 								--application-name	'Jenkins-test' \
 								--version-label		'${env.BRANCH_NAME}-v${env.BUILD_ID}' \
-								--source-bundle 	S3Bucket='${S3_BUCKET}', \
+								--source-bundle 	S3Bucket='${S3_BUCKET}' \
 													S3Key='Dockerrun.aws.${env.BRANCH_NAME}-v${env.BUILD_ID}.zip'"
 						}
 
