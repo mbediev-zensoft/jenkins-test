@@ -63,7 +63,7 @@ pipeline {
 						accessKeyVariable: 'AWS_ACCESS_KEY_ID',
 						secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
 					]]) {
-						def awscli = docker.image('mesosphere/aws-cli:latest')
+						def awscli = docker.image('xueshanf/awscli:latest')
 						awscli.pull()
 						awscli.inside("-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} -e AWS_DEFAULT_REGION=${AWS_REGION}") {
 							"aws s3 cp \
@@ -87,7 +87,7 @@ pipeline {
 						accessKeyVariable: 'AWS_ACCESS_KEY_ID',
 						secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
 					]]) {
-						def awscli = docker.image('mesosphere/aws-cli:latest')
+						def awscli = docker.image('xueshanf/awscli:latest')
 						awscli.pull()
 						awscli.inside("-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} -e AWS_DEFAULT_REGION=${AWS_REGION}") {
 							"aws elasticbeanstalk create-application-version \
