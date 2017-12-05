@@ -3,7 +3,6 @@ pipeline {
 
     environment {
         PROJECT_NAME	= 'jenkins-test'											// container name
-		AWS_BIN			= '/opt/jenkins/.local/bin/aws'
 		AWS_REGION		= 'eu-west-1'
 		ECR_REPO_URL	= 'https://174962129288.dkr.ecr.eu-west-1.amazonaws.com'	// ecr repository url
 		ECR_CRED_ID		= 'ecr:eu-west-1:aws-user-jenkins'							// ecr:region_id:jenkins_cred_id
@@ -44,7 +43,7 @@ pipeline {
 		stage('upload') {
 			steps {
 				script {
-					docker.withRegistry('https://174962129288.dkr.ecr.eu-west-1.amazonaws.com/', 'ecr:eu-west-1:aws-user-jenkins') {
+					docker.withRegistry("${ECR_REPO_URL}", 'ecr:eu-west-1:aws-user-jenkins') {
 						docker.image("${env.PROJECT_NAME}:${env.BRANCH_NAME}-v${env.BUILD_ID}").push("${env.BRANCH_NAME}-v${env.BUILD_ID}")
 					}
 				}
@@ -52,7 +51,7 @@ pipeline {
 		}
 		stage('upload version conf to s3') {
 			steps {
-				sh "sed -i='' 's#<image_name>#174962129288.dkr.ecr.eu-west-1.amazonaws.com/${env.PROJECT_NAME}#' ${env.WORKSPACE}/Dockerrun.aws.json"
+				sh "sed -i='' 's#<image_name>#${ECR_REPO_URL}/${env.PROJECT_NAME}#' ${env.WORKSPACE}/Dockerrun.aws.json"
 				sh "sed -i='' 's/<tag_name>/${env.BRANCH_NAME}-v${env.BUILD_ID}/' ${env.WORKSPACE}/Dockerrun.aws.json"
 				sh "sed -i='' 's/<memory_placeholder>/250/' ${env.WORKSPACE}/Dockerrun.aws.json"
 				sh "/usr/bin/zip -j -r ${env.WORKSPACE}/Dockerrun.aws.${env.BRANCH_NAME}-v${env.BUILD_ID}.zip ${env.WORKSPACE}/Dockerrun.aws.json"
