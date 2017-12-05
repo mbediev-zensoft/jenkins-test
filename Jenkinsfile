@@ -5,7 +5,6 @@ pipeline {
         PROJECT_NAME	= 'jenkins-test'											// container name
 		AWS_REGION		= 'eu-west-1'
 		ECR_REPO_URL	= 'https://174962129288.dkr.ecr.eu-west-1.amazonaws.com'	// ecr repository url
-		ECR_CRED_ID		= 'ecr:eu-west-1:aws-user-jenkins'							// ecr:region_id:jenkins_cred_id
 		S3_BUCKET		= 'elasticbeanstalk-eu-west-1-174962129288'
     }
 
@@ -22,6 +21,9 @@ pipeline {
 			}
 		}
 		stage('tests') {
+			when {
+				branch 'dev'
+			}
 			steps {
 				script {
 					def node = docker.image('node:carbon-stretch')
@@ -43,7 +45,7 @@ pipeline {
 		stage('upload') {
 			steps {
 				script {
-					docker.withRegistry('${ECR_REPO_URL}', 'ecr:eu-west-1:aws-user-jenkins') {
+					docker.withRegistry('https://174962129288.dkr.ecr.eu-west-1.amazonaws.com', 'ecr:eu-west-1:aws-user-jenkins') {
 						docker.image("${env.PROJECT_NAME}:${env.BRANCH_NAME}-v${env.BUILD_ID}").push("${env.BRANCH_NAME}-v${env.BUILD_ID}")
 					}
 				}
