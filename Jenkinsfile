@@ -41,7 +41,7 @@ pipeline {
 		stage('build') {
 			steps {
 				script {
-					def nodeDockerImage = docker.build("${env.PROJECT_NAME}:${env.BRANCH_NAME}-v${env.BUILD_ID}", "--build-arg NODE_ENV=env_name")
+					def nodeDockerImage = docker.build("${env.PROJECT_NAME}:${env.BRANCH_NAME}-v${env.BUILD_ID}", "--build-arg NODE_ENV=env_name .")
 				}
 			}
 		}
