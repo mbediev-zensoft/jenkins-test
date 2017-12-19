@@ -25,6 +25,7 @@ pipeline {
                anyOf {
                   branch "master"
                   branch "master"
+			   }
 			}
 			steps {
 				script {
