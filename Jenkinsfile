@@ -24,7 +24,8 @@ pipeline {
 			when {
                anyOf {
                   branch "master"
-                  branch "master"
+                  branch "dev"
+			   }
 			}
 			steps {
 				script {
@@ -37,13 +38,13 @@ pipeline {
 				}
 			}
 		}
-		// stage('build') {
-		// 	steps {
-		// 		script {
-		// 			def nodeDockerImage = docker.build("${env.PROJECT_NAME}:${env.BRANCH_NAME}-v${env.BUILD_ID}")
-		// 		}
-		// 	}
-		// }
+		stage('build') {
+			steps {
+				script {
+					def nodeDockerImage = docker.build("${env.PROJECT_NAME}:${env.BRANCH_NAME}-v${env.BUILD_ID}", "--build-arg NODE_ENV=env_name .")
+				}
+			}
+		}
 		// stage('upload') {
 		// 	steps {
 		// 		script {
